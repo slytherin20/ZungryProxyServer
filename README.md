@@ -1,0 +1,1 @@
+This is a proxy server for Zungry App to bypass CORS extension.
