@@ -50,6 +50,43 @@ app.get('/api/menu',(req,res)=>{
         res.status(500).send("An error occured while fetching data")
     })
 })
+
+app.get('/search',(req,res)=>{
+    const {lat,long,kwd} = req.query;
+    let url = `https://www.swiggy.com/dapi/restaurants/list/v5?lat=${lat}&lng=${long}&page_type=DESKTOP_WEB_LISTING`;
+    fetch(url,{
+        headers:{
+            'Content-Type':'application/json',
+            'Access-Control-Allow-Origin':'*',
+            'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+        }
+    }).then((response)=>{
+        if(!response.ok) res.status(response.status).send("An error occured");
+        else{
+            return response.json()
+        }
+    }).then(restaurantsData=>{
+        restaurantsData =
+      restaurantsData?.data?.cards[2]?.card?.card?.gridElements?.infoWithStyle
+        ?.restaurants || [];
+    let result = restaurantsData.filter((restaurant) =>
+      restaurant.info.name.toLowerCase().includes(kwd)
+    );
+    let data = result.map((restaurant) => {
+      let obj = {
+        name: restaurant.info.name,
+        id: restaurant.info.id,
+      };
+      return obj;
+    });
+    res.status(200).json(data)
+    }).catch(err=>{
+        console.log(err)
+        res.status(500).send("Internal Server Error");
+    })
+
+})
+
 app.listen(port,()=>{
     console.log("Server listening on port",port);
 })
