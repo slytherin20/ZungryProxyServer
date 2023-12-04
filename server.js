@@ -72,7 +72,7 @@ app.get('/search',(req,res)=>{
       restaurantsData?.data?.cards[2]?.card?.card?.gridElements?.infoWithStyle
         ?.restaurants || [];
     let result = restaurantsData.filter((restaurant) =>
-      restaurant.info.name.toLowerCase().includes(kwd)
+      restaurant.info.name.toLowerCase().startsWith(kwd.toLowerCase()) || restaurant.info.name.toLowerCase().split(" ").includes(kwd.toLowerCase()) || restaurant.info.name.toLowerCase().split("-").includes(kwd.toLowerCase()) 
     );
     let data = result.map((restaurant) => {
       let obj = {
