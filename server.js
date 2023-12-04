@@ -7,7 +7,8 @@ const port = process.env.PORT || 3000;
 
 
 app.use(cors());
-app.get('/',(req,res)=> res.json({"test":"Proxy Server is running successfully"}));
+app.get('/',(req,res)=> 
+res.json({"test":"Proxy Server is running successfully"}));
 app.get('/api/restaurants',(req,res)=>{
     const {lat,long} = req.query;
     let uri = `https://www.swiggy.com/dapi/restaurants/list/v5?lat=${lat}&lng=${long}&page_type=DESKTOP_WEB_LISTING`;
@@ -61,7 +62,8 @@ app.get('/search',(req,res)=>{
             'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
         }
     }).then((response)=>{
-        if(!response.ok) res.status(response.status).send("An error occured");
+        if(!response.ok) 
+            res.status(response.status).send("An error occured");
         else{
             return response.json()
         }
@@ -84,6 +86,50 @@ app.get('/search',(req,res)=>{
         console.log(err)
         res.status(500).send("Internal Server Error");
     })
+
+})
+
+app.get("/locationsearch",(req,res)=>{
+    let {kwd} = req.query;
+    let url = `https://www.swiggy.com/dapi/misc/place-autocomplete?input=${kwd}&types=`;
+
+   fetch(url,{
+    headers:{
+        'Content-Type':'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+    }
+   }).then(response=> {
+    if(!response.ok) res.status(response.status).send("An error occured");
+    else return response.json()
+   }).then(responseData=>{
+    
+    res.status(200).json(responseData)
+   }).catch(err=>{
+    res.status(500).send("Internal Server Error");
+    console.log(err)
+   })
+})
+
+app.get("/locateaddress",(req,res)=>{
+    let {id} = req.query;
+    let url = `https://www.swiggy.com/dapi/misc/address-recommend?place_id=${id}`;
+    fetch(url,{
+        headers:{
+            "Content-Type":"application/json",
+            "Access-Control-Allow-Origin":"*",
+            'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+        }
+       }).then(response=> {
+        if(!response.ok) res.status(response.status).send("An error occured");
+        else return response.json()
+       }).then(responseData=>{
+
+        res.status(200).json(responseData.data[0]?.geometry?.location)
+       }).catch(err=>{
+        res.status(500).send("Internal Server Error");
+        console.log(err)
+       })
 
 })
 
