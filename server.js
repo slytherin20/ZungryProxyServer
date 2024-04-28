@@ -68,9 +68,11 @@ app.get('/search',(req,res)=>{
             return response.json()
         }
     }).then(restaurantsData=>{
-        restaurantsData =
-      restaurantsData?.data?.cards[2]?.card?.card?.gridElements?.infoWithStyle
-        ?.restaurants || [];
+        restaurantsData = restaurantsData?.data?.cards[2]?.card?.card?.gridElements?.infoWithStyle
+        ?.restaurants ||
+      restaurantsData?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle
+        ?.restaurants ||
+      [];
     let result = restaurantsData.filter((restaurant) =>
       restaurant.info.name.toLowerCase().startsWith(kwd.toLowerCase()) || restaurant.info.name.toLowerCase().split(" ").includes(kwd.toLowerCase()) || restaurant.info.name.toLowerCase().split("-").includes(kwd.toLowerCase()) 
     );
